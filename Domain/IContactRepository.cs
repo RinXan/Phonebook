@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Phonebook.Domain
+﻿namespace Phonebook.Domain
 {
     public interface IContactRepository
     {
-        void AddContact(Contact contact);
-        Contact? GetContact(int id);
-        IEnumerable<Contact> GetAllContacts();
-        void DeleteContact(int id);
-        void UpdateContact(Contact contact); 
+        void Add(Contact contact);
+        Contact? GetById(int id);
+        IEnumerable<Contact> GetAll();
+        void Delete(int id);
+        void Update(Contact contact); 
         void SaveChanges();
     }
 }
