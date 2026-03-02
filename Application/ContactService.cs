@@ -45,5 +45,19 @@ namespace Phonebook.Application
                 c.Phone.ToLowerInvariant().Contains(searchTerm) ||
                 c.Email.ToLowerInvariant().Contains(searchTerm));
         }
+        public IEnumerable<string> GetAllGroups()
+        {
+            return _repository.GetAll()
+                .Select(c => c.Group)
+                .Where(g => !string.IsNullOrWhiteSpace(g))
+                .Distinct()
+                .OrderBy(g => g);
+        }
+        public IEnumerable<Contact> GetContactsByGroup(string group)
+        {
+            if (string.IsNullOrWhiteSpace(group)) return Enumerable.Empty<Contact>();
+
+            return _repository.GetAll().Where(c => c.Group.Equals(group, StringComparison.OrdinalIgnoreCase));
+        }
     }
 }

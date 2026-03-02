@@ -21,6 +21,7 @@ namespace Phonebook.Presentation
                 Console.WriteLine("3. Search contact");
                 Console.WriteLine("4. Delete contact");
                 Console.WriteLine("5. Update contact");
+                Console.WriteLine("6. Show contacts by a group");
                 Console.WriteLine("0. Exit");
 
                 Console.Write("Choice: ");
@@ -46,6 +47,9 @@ namespace Phonebook.Presentation
                         break;
                     case 5:
                         UpdateContact();
+                        break;
+                    case 6:
+                        ShowContactsByGroup();
                         break;
                     default:
                         Console.WriteLine("Not available command");
@@ -244,6 +248,54 @@ namespace Phonebook.Presentation
                 Console.WriteLine(new string('-', 45));
 
                 foreach (Contact contact in results)
+                {
+                    Console.WriteLine($"{contact.Id}  |{contact.Name}\t|{contact.Phone}\t|{contact.Email}\t|{contact.Group}");
+                }
+
+                Console.WriteLine(new string('-', 45));
+            }
+        }
+        private void ShowContactsByGroup()
+        {
+            Console.Clear();
+            Console.WriteLine("### Contacts by group ###");
+
+            List<string> groups = _contactService.GetAllGroups().ToList();
+
+            if (!groups.Any())
+            {
+                Console.WriteLine("Contacts are without groups");
+                return;
+            }
+
+            Console.WriteLine("Available groups:");
+
+            for (int i = 0; i < groups.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}) {groups[i]}");
+            }
+
+            Console.Write("Choose group number: ");
+            
+            if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > groups.Count)
+            {
+                Console.WriteLine("Not correct choice");
+                return;
+            }
+
+            string selectedGroup = groups[choice - 1];
+            List<Contact> contactsFromGroup = _contactService.GetContactsByGroup(selectedGroup).ToList();
+
+            if (!contactsFromGroup.Any())
+            {
+                Console.WriteLine("Contacts in this group does not exist");
+            }
+            else
+            {
+                Console.WriteLine("ID |NAME\t|PHONE\t|EMAIL\t|GROUP\t");
+                Console.WriteLine(new string('-', 45));
+
+                foreach (Contact contact in contactsFromGroup)
                 {
                     Console.WriteLine($"{contact.Id}  |{contact.Name}\t|{contact.Phone}\t|{contact.Email}\t|{contact.Group}");
                 }
