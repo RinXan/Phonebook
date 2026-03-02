@@ -24,5 +24,10 @@ namespace Phonebook.Application
             _repository.Add(contact);
             //_repository.SaveChanges();
         }
+    
+        public void DeleteContact(int contactId)
+        {
+            _repository.Delete(contactId);
+        }
     }
 }

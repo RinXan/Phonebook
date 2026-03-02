@@ -20,6 +20,8 @@ namespace Phonebook.Presentation
                 Console.WriteLine("### PhoneBook ###");
                 Console.WriteLine("1. Show all contacts");
                 Console.WriteLine("2. Add new contact");
+                Console.WriteLine("3. Delete contact");
+                Console.WriteLine("4. Update contact");
                 Console.WriteLine("0. Exit");
 
                 Console.Write("Choice: ");
@@ -29,13 +31,19 @@ namespace Phonebook.Presentation
                 switch (choice)
                 {
                     case 0:
-                        Console.WriteLine("Goob by");
+                        Console.WriteLine("\nGoob by");
                         return;
                     case 1:
                         ShowAllContacts();
                         break;
                     case 2:
                         AddNewContact();
+                        break;
+                    case 3:
+                        DeleteContact();
+                        break;
+                    case 4:
+                        UpdateContact();
                         break;
                     default:
                         Console.WriteLine("Not available command");
@@ -97,6 +105,40 @@ namespace Phonebook.Presentation
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
+        }
+        
+        private void DeleteContact()
+        {
+            Console.Clear();
+            Console.WriteLine("### Delete contact ###");
+
+            List<Contact> contacts = _contactService.GetAllContacts().ToList();
+
+            Console.WriteLine("NAME\t|\tID");
+            Console.WriteLine(new string('-', 25));
+
+            int i = 1;
+            
+            foreach (Contact contact in contacts)
+            {
+                Console.WriteLine($"{contact.Name}\t|\t{contact.Id}");
+                i++;
+            }
+            
+            Console.WriteLine(new string('-', 25));
+            Console.Write("Enter contact ID: ");
+            
+            int contactId = int.Parse(Console.ReadLine());
+
+            _contactService.DeleteContact(contactId);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"\nContact with id {contactId} deleted!");
+            Console.ResetColor();
+        }
+        private void UpdateContact()
+        {
+            Console.WriteLine("Not implemented yet.\nPress any key...");
+            Console.ReadKey();
         }
     }
 }
