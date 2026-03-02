@@ -170,12 +170,12 @@ namespace Phonebook.Presentation
                 return;
             }
 
-            Console.WriteLine("NAME\t|ID\t|EMAIL\t|GROUP");
+            Console.WriteLine("ID |NAME\t|PHONE\t|EMAIL\t|GROUP\t");
             Console.WriteLine(new string('-', 45));
 
             foreach (Contact contact in contacts)
             {
-                Console.WriteLine($"{contact.Name}\t|{contact.Id}\t|{contact.Email}\t|{contact.Group}");
+                Console.WriteLine($"{contact.Id}  |{contact.Name}\t|{contact.Phone}\t|{contact.Email}\t|{contact.Group}");
             }
 
             Console.WriteLine(new string('-', 45));
@@ -198,6 +198,7 @@ namespace Phonebook.Presentation
             {
                 Id = existing.Id,
                 Name = InputWithDefault("Name", existing.Name),
+                Phone = InputWithDefault("Phone", existing.Phone),
                 Email = InputWithDefault("Email", existing.Email),
                 Group = InputWithDefault("Group", existing.Group)
             };
@@ -218,7 +219,37 @@ namespace Phonebook.Presentation
         }
         private void SearchContact()
         {
-            Console.WriteLine("Not implemented yet");
+            Console.Clear();
+            Console.WriteLine("### Search contact ###");
+            Console.Write("Enter text for searching (name, email, phone): ");
+
+            string term = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                Console.WriteLine("Serach text cannot be empty");
+                return;
+            }
+
+            List<Contact> results = _contactService.Search(term).ToList();
+
+            if (!results.Any())
+            {
+                Console.WriteLine($"Contacts not found. Search term: {term}");
+            }
+            else
+            {
+                Console.WriteLine($"Count of found contacts: {results.Count}");
+                Console.WriteLine("\nID |NAME\t|PHONE\t|EMAIL\t|GROUP\t");
+                Console.WriteLine(new string('-', 45));
+
+                foreach (Contact contact in results)
+                {
+                    Console.WriteLine($"{contact.Id}  |{contact.Name}\t|{contact.Phone}\t|{contact.Email}\t|{contact.Group}");
+                }
+
+                Console.WriteLine(new string('-', 45));
+            }
         }
         private string InputWithDefault(string fieldName, string currentValue)
         {

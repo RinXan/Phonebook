@@ -34,5 +34,16 @@ namespace Phonebook.Application
             _repository.Update(contact);
             _repository.SaveChanges();
         }   
+        public IEnumerable<Contact> Search(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm)) return Enumerable.Empty<Contact>();
+
+            searchTerm = searchTerm.Trim().ToLowerInvariant();
+
+            return _repository.GetAll().Where(c =>
+                c.Name.ToLowerInvariant().Contains(searchTerm) ||
+                c.Phone.ToLowerInvariant().Contains(searchTerm) ||
+                c.Email.ToLowerInvariant().Contains(searchTerm));
+        }
     }
 }
