@@ -8,26 +8,31 @@ namespace Phonebook.Application
     public class ContactService
     {
         private readonly IContactRepository _repository;
-
         public ContactService(IContactRepository repository)
         {
             if (repository == null) throw new ArgumentException("Repository is null");
             _repository = repository;
         }
-
         public IEnumerable<Contact> GetAllContacts() => _repository.GetAll();
-
+        public Contact GetContactById(int id) => _repository.GetById(id);
         public void AddContact(Contact contact) 
         {
             if (string.IsNullOrWhiteSpace(contact.Name)) throw new ArgumentException("Name cannot be empty");
             
             _repository.Add(contact);
-            //_repository.SaveChanges();
+            _repository.SaveChanges();
         }
-    
         public void DeleteContact(int contactId)
         {
+            if (contactId <= 0) throw new ArgumentException("Contact id is not correct");
             _repository.Delete(contactId);
+            _repository.SaveChanges();
         }
+        public void UpdateContact(Contact contact)
+        {
+            if (contact.Id <= 0) throw new ArgumentException("Contact id is not correct");
+            _repository.Update(contact);
+            _repository.SaveChanges();
+        }   
     }
 }

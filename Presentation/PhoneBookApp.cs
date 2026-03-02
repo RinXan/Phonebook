@@ -6,12 +6,10 @@ namespace Phonebook.Presentation
     public class PhoneBookApp
     {
         private readonly ContactService _contactService;
-
         public PhoneBookApp(ContactService contactService)
         {
             _contactService = contactService;
         }
-
         public void Run()
         {
             while (true)
@@ -20,8 +18,9 @@ namespace Phonebook.Presentation
                 Console.WriteLine("### PhoneBook ###");
                 Console.WriteLine("1. Show all contacts");
                 Console.WriteLine("2. Add new contact");
-                Console.WriteLine("3. Delete contact");
-                Console.WriteLine("4. Update contact");
+                Console.WriteLine("3. Search contact");
+                Console.WriteLine("4. Delete contact");
+                Console.WriteLine("5. Update contact");
                 Console.WriteLine("0. Exit");
 
                 Console.Write("Choice: ");
@@ -40,9 +39,12 @@ namespace Phonebook.Presentation
                         AddNewContact();
                         break;
                     case 3:
-                        DeleteContact();
+                        SearchContact();
                         break;
                     case 4:
+                        DeleteContact();
+                        break;
+                    case 5:
                         UpdateContact();
                         break;
                     default:
@@ -53,7 +55,6 @@ namespace Phonebook.Presentation
                 Console.ReadKey();
             }
         }
-
         private void ShowAllContacts()
         {
             Console.Clear();
@@ -78,7 +79,6 @@ namespace Phonebook.Presentation
                 }
             }
         }
-        
         private void AddNewContact()
         {
             Console.Clear();
@@ -106,7 +106,6 @@ namespace Phonebook.Presentation
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
-        
         private void DeleteContact()
         {
             Console.Clear();
@@ -114,31 +113,118 @@ namespace Phonebook.Presentation
 
             List<Contact> contacts = _contactService.GetAllContacts().ToList();
 
-            Console.WriteLine("NAME\t|\tID");
+            if (!contacts.Any())
+            {
+                Console.WriteLine("Phone book is empty");
+                return;
+            }
+
+            Console.WriteLine("NAME\t|ID");
             Console.WriteLine(new string('-', 25));
 
-            int i = 1;
-            
             foreach (Contact contact in contacts)
             {
-                Console.WriteLine($"{contact.Name}\t|\t{contact.Id}");
-                i++;
+                Console.WriteLine($"{contact.Name}\t|{contact.Id}");
             }
             
             Console.WriteLine(new string('-', 25));
             Console.Write("Enter contact ID: ");
             
-            int contactId = int.Parse(Console.ReadLine());
+            if (!int.TryParse(Console.ReadLine(), out int contactId))
+            {
+                Console.WriteLine("ID is not correct");
+                return;
+            }
 
-            _contactService.DeleteContact(contactId);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"\nContact with id {contactId} deleted!");
+            Contact existing = _contactService.GetContactById(contactId);
+            if (existing == null)
+            {
+                Console.WriteLine($"Contact with id {contactId} does not exist");
+                return;
+            }
+
+            try
+            {
+                _contactService.DeleteContact(contactId);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"\nContact {existing.Name} deleted!");
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error while deleting {existing.Name}");
+                Console.WriteLine(ex.ToString());
+            }
             Console.ResetColor();
         }
         private void UpdateContact()
         {
-            Console.WriteLine("Not implemented yet.\nPress any key...");
-            Console.ReadKey();
+            Console.Clear();
+            Console.WriteLine("### Update contact ###");
+
+            List<Contact> contacts = _contactService.GetAllContacts().ToList();
+
+            if (!contacts.Any())
+            {
+                Console.WriteLine("Phone book is empty");
+                return;
+            }
+
+            Console.WriteLine("NAME\t|ID\t|EMAIL\t|GROUP");
+            Console.WriteLine(new string('-', 45));
+
+            foreach (Contact contact in contacts)
+            {
+                Console.WriteLine($"{contact.Name}\t|{contact.Id}\t|{contact.Email}\t|{contact.Group}");
+            }
+
+            Console.WriteLine(new string('-', 45));
+            Console.Write("Enter contact ID: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int contactId))
+            {
+                Console.WriteLine("ID is not correct");
+                return;
+            }
+
+            Contact existing = _contactService.GetContactById(contactId);
+            if (existing == null)
+            {
+                Console.WriteLine($"Contact with id {contactId} does not exist");
+                return;
+            }
+
+            Contact updated = new Contact
+            {
+                Id = existing.Id,
+                Name = InputWithDefault("Name", existing.Name),
+                Email = InputWithDefault("Email", existing.Email),
+                Group = InputWithDefault("Group", existing.Group)
+            };
+
+            try
+            {
+                _contactService.UpdateContact(updated);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Contact {updated.Name} updated");
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error while updating {updated.Name}");
+                Console.WriteLine(ex.ToString());
+            }
+            Console.ResetColor();
+        }
+        private void SearchContact()
+        {
+            Console.WriteLine("Not implemented yet");
+        }
+        private string InputWithDefault(string fieldName, string currentValue)
+        {
+            Console.Write($"{fieldName} [{currentValue}]: ");
+            string input = Console.ReadLine();
+            return string.IsNullOrWhiteSpace(input) ? currentValue : input;
         }
     }
 }

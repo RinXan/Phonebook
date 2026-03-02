@@ -23,11 +23,11 @@ namespace Phonebook.Infrastructure
                 try
                 {
                     var json = File.ReadAllText(_filePath);
-                    _contacts = JsonSerializer.Deserialize<List<Contact>>(json);
+                    _contacts = JsonSerializer.Deserialize<List<Contact>>(json) ?? new List<Contact>();
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine("[File does not exist]");
+                    _contacts = new List<Contact>();   
                 }
             } else
             {
