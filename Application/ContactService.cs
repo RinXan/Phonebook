@@ -59,5 +59,22 @@ namespace Phonebook.Application
 
             return _repository.GetAll().Where(c => c.Group.Equals(group, StringComparison.OrdinalIgnoreCase));
         }
+        public string ExportToCsv()
+        {
+            List<Contact> contacts = _repository.GetAll().ToList();
+
+            if (!contacts.Any()) return string.Empty;
+
+            var sb = new StringBuilder();
+
+            sb.AppendLine("ID,NAME,PHONE,EMAIL,GROUP");
+
+            foreach (Contact c in contacts)
+            {
+                sb.AppendLine($"{c.Id},\"{c.Name}\",\"{c.Phone}\",\"{c.Email}\",\"{c.Group}\"");
+            }
+
+            return sb.ToString();
+        }
     }
 }

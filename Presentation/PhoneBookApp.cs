@@ -1,4 +1,5 @@
-﻿using Phonebook.Application;
+﻿using System.Text;
+using Phonebook.Application;
 using Phonebook.Domain;
 
 namespace Phonebook.Presentation
@@ -22,6 +23,7 @@ namespace Phonebook.Presentation
                 Console.WriteLine("4. Delete contact");
                 Console.WriteLine("5. Update contact");
                 Console.WriteLine("6. Show contacts by a group");
+                Console.WriteLine("7. Export to CSV");
                 Console.WriteLine("0. Exit");
 
                 Console.Write("Choice: ");
@@ -50,6 +52,9 @@ namespace Phonebook.Presentation
                         break;
                     case 6:
                         ShowContactsByGroup();
+                        break;
+                    case 7:
+                        ExportContacts();
                         break;
                     default:
                         Console.WriteLine("Not available command");
@@ -254,6 +259,37 @@ namespace Phonebook.Presentation
 
                 Console.WriteLine(new string('-', 45));
             }
+        }
+        private void ExportContacts()
+        {
+            Console.Clear();
+            Console.WriteLine("### Export to CSV");
+
+            var csvData = _contactService.ExportToCsv();
+            if (string.IsNullOrEmpty(csvData))
+            {
+                Console.WriteLine("Contact's list is empty");
+                return;
+            }
+
+            Console.Write("Enter file name (defualt name contacts.csv): ");
+            var fileName = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(fileName))
+                fileName = "contacts.csv";
+            else if (!fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                fileName += ".csv";
+
+            try
+            {
+                File.WriteAllText(fileName, csvData, Encoding.UTF8);
+                Console.WriteLine($"Contacts exported to {fileName}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while exporting contacts: {ex.Message}");
+            }
+
+            Console.ReadKey();
         }
         private void ShowContactsByGroup()
         {
