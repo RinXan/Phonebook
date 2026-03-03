@@ -28,12 +28,17 @@ namespace Phonebook.Presentation
 
                 Console.Write("Choice: ");
 
-                int choice = int.Parse(Console.ReadLine());
+                if (!int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    ConsoleHelper.WriteError("Choice is not correct. Press any key...");
+                    Console.ReadKey();
+                    continue;
+                }
 
                 switch (choice)
                 {
                     case 0:
-                        Console.WriteLine("\nGoob by");
+                        ConsoleHelper.WriteSuccess("\nGoob by");
                         return;
                     case 1:
                         ShowAllContacts();
@@ -57,10 +62,10 @@ namespace Phonebook.Presentation
                         ExportContacts();
                         break;
                     default:
-                        Console.WriteLine("Not available command");
+                        ConsoleHelper.WriteInfo("Not available command");
                         break;
                 }
-                Console.WriteLine("\nPress any key...");
+                ConsoleHelper.WriteInfo("\nPress any key...");
                 Console.ReadKey();
             }
         }
@@ -73,7 +78,7 @@ namespace Phonebook.Presentation
 
             if (contacts.Count == 0)
             {
-                Console.WriteLine("\nPhone book is empty");
+                ConsoleHelper.WriteInfo("\nPhone book is empty");
             }
             else
             {
@@ -106,13 +111,11 @@ namespace Phonebook.Presentation
             try
             {
                 _contactService.AddContact(contact);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Contact added succesfully");
-                Console.ResetColor();
+                ConsoleHelper.WriteSuccess("Contact added succesfully");
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                ConsoleHelper.WriteError($"Error: {ex.Message}");
             }
         }
         private void DeleteContact()
@@ -141,30 +144,27 @@ namespace Phonebook.Presentation
             
             if (!int.TryParse(Console.ReadLine(), out int contactId))
             {
-                Console.WriteLine("ID is not correct");
+                ConsoleHelper.WriteInfo("ID is not correct");
                 return;
             }
 
             Contact existing = _contactService.GetContactById(contactId);
             if (existing == null)
             {
-                Console.WriteLine($"Contact with id {contactId} does not exist");
+                ConsoleHelper.WriteInfo($"Contact with id {contactId} does not exist");
                 return;
             }
 
             try
             {
                 _contactService.DeleteContact(contactId);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\nContact {existing.Name} deleted!");
+                ConsoleHelper.WriteSuccess($"\nContact {existing.Name} deleted!");
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error while deleting {existing.Name}");
+                ConsoleHelper.WriteError($"Error while deleting {existing.Name}");
                 Console.WriteLine(ex.ToString());
             }
-            Console.ResetColor();
         }
         private void UpdateContact()
         {
@@ -175,7 +175,7 @@ namespace Phonebook.Presentation
 
             if (!contacts.Any())
             {
-                Console.WriteLine("Phone book is empty");
+                ConsoleHelper.WriteInfo("Phone book is empty");
                 return;
             }
 
@@ -192,14 +192,14 @@ namespace Phonebook.Presentation
 
             if (!int.TryParse(Console.ReadLine(), out int contactId))
             {
-                Console.WriteLine("ID is not correct");
+                ConsoleHelper.WriteInfo("ID is not correct");
                 return;
             }
 
             Contact existing = _contactService.GetContactById(contactId);
             if (existing == null)
             {
-                Console.WriteLine($"Contact with id {contactId} does not exist");
+                ConsoleHelper.WriteInfo($"Contact with id {contactId} does not exist");
                 return;
             }
 
@@ -215,16 +215,13 @@ namespace Phonebook.Presentation
             try
             {
                 _contactService.UpdateContact(updated);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Contact {updated.Name} updated");
+                ConsoleHelper.WriteSuccess($"Contact {updated.Name} updated");
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error while updating {updated.Name}");
+                ConsoleHelper.WriteError($"Error while updating {updated.Name}");
                 Console.WriteLine(ex.ToString());
             }
-            Console.ResetColor();
         }
         private void SearchContact()
         {
@@ -236,7 +233,7 @@ namespace Phonebook.Presentation
 
             if (string.IsNullOrWhiteSpace(term))
             {
-                Console.WriteLine("Serach text cannot be empty");
+                ConsoleHelper.WriteInfo("Serach text cannot be empty");
                 return;
             }
 
@@ -244,7 +241,7 @@ namespace Phonebook.Presentation
 
             if (!results.Any())
             {
-                Console.WriteLine($"Contacts not found. Search term: {term}");
+                ConsoleHelper.WriteInfo($"Contacts not found. Search term: {term}");
             }
             else
             {
@@ -268,7 +265,7 @@ namespace Phonebook.Presentation
             var csvData = _contactService.ExportToCsv();
             if (string.IsNullOrEmpty(csvData))
             {
-                Console.WriteLine("Contact's list is empty");
+                ConsoleHelper.WriteInfo("Contact's list is empty");
                 return;
             }
 
@@ -282,11 +279,11 @@ namespace Phonebook.Presentation
             try
             {
                 File.WriteAllText(fileName, csvData, Encoding.UTF8);
-                Console.WriteLine($"Contacts exported to {fileName}");
+                ConsoleHelper.WriteSuccess($"Contacts exported to {fileName}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while exporting contacts: {ex.Message}");
+                ConsoleHelper.WriteError($"Error while exporting contacts: {ex.Message}");
             }
 
             Console.ReadKey();
@@ -315,7 +312,7 @@ namespace Phonebook.Presentation
             
             if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > groups.Count)
             {
-                Console.WriteLine("Not correct choice");
+                ConsoleHelper.WriteInfo("Not correct choice");
                 return;
             }
 
@@ -324,7 +321,7 @@ namespace Phonebook.Presentation
 
             if (!contactsFromGroup.Any())
             {
-                Console.WriteLine("Contacts in this group does not exist");
+                ConsoleHelper.WriteInfo("Contacts in this group does not exist");
             }
             else
             {
