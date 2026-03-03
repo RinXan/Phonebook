@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Phonebook.Presentation
+﻿namespace Phonebook.Presentation
 {
     public class ConsoleHelper
     {
+        public static void Write(string message)
+        {
+            Console.WriteLine(message);
+        }
+        public static void WriteHeader(string header)
+        {
+            Console.Clear();
+            Console.WriteLine(header);
+        }
         public static void WriteError(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
